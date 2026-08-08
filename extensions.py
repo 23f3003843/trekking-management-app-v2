@@ -12,4 +12,5 @@ cors = CORS()
 cache_manager = Cache()
 mail_service = Mail()
 
+#Celery instance is created
 celery_app = Celery(__name__)
