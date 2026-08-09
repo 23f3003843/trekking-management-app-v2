@@ -1,6 +1,6 @@
 from datetime import datetime, date
 from werkzeug.security import generate_password_hash, check_password_hash
-from extensions import db
+from extensions import database
 
 roleOfAdmin = "admin"
 roleOfStaff = "staff"
@@ -25,21 +25,21 @@ status_cancelled_booking = "Cancelled"
 status_completed_booking = "Completed"
 
 # User Table
-class User(db.Model):
+class User(database.Model):
     __tablename__ = "users"
 
-    id = db.Column(db.Integer, primary_key=True)
-    fullName = db.Column(db.String(120), nullable=False)
-    email = db.Column(db.String(150), unique=True, nullable=False, index=True)
-    password_hash = db.Column(db.String(255), nullable=False)
-    phone = db.Column(db.String(20), nullable=True)
-    role = db.Column(db.String(20), nullable=False, default=roleOfTrekker)
-    status = db.Column(db.String(20), nullable=False, default=status_active_trekker)
-    createdAt = db.Column(db.DateTime, default=datetime.utcnow)
+    id = database.Column(database.Integer, primary_key=True)
+    fullName = database.Column(database.String(120), nullable=False)
+    email = database.Column(database.String(150), unique=True, nullable=False, index=True)
+    password_hash = database.Column(database.String(255), nullable=False)
+    phone = database.Column(database.String(20), nullable=True)
+    role = database.Column(database.String(20), nullable=False, default=roleOfTrekker)
+    status = database.Column(database.String(20), nullable=False, default=status_active_trekker)
+    createdAt = database.Column(database.DateTime, default=datetime.utcnow)
 
-    treksAssigned = db.relationship("Trek", back_populates="staff", foreign_keys="Trek.staffId")
-    bookings = db.relationship("Booking", back_populates="trekker", foreign_keys="Booking.userId", cascade="all, delete-orphan",)
-    exportJobs = db.relationship("ExportJob", back_populates="user", cascade="all, delete-orphan",)
+    treksAssigned = database.relationship("Trek", back_populates="staff", foreign_keys="Trek.staffId")
+    bookings = database.relationship("Booking", back_populates="trekker", foreign_keys="Booking.userId", cascade="all, delete-orphan",)
+    exportJobs = database.relationship("ExportJob", back_populates="user", cascade="all, delete-orphan",)
 
     def set_password(self, raw_password: str) -> None:
         self.password_hash = generate_password_hash(raw_password)
@@ -69,29 +69,29 @@ class User(db.Model):
         return data
 
 # Trek Table
-class Trek(db.Model):
+class Trek(database.Model):
     __tablename__ = "treks"
 
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(150), nullable=False)
-    location = db.Column(db.String(150), nullable=False)
-    difficulty = db.Column(db.String(20), nullable=False, default="Easy")
-    durationOfDays = db.Column(db.Integer, nullable=False, default=1)
-    totalSlots = db.Column(db.Integer, nullable=False, default=10)
-    slotsAvailable = db.Column(db.Integer, nullable=False, default=10)
-    staffId = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=True)
-    status = db.Column(db.String(20), nullable=False, default=status_pending_trek)
-    startDate = db.Column(db.Date, nullable=False, default=date.today)
-    endDate = db.Column(db.Date, nullable=False, default=date.today)
-    description = db.Column(db.Text, nullable=True)
-    createdAt = db.Column(db.DateTime, default=datetime.utcnow)
+    id = database.Column(database.Integer, primary_key=True)
+    name = database.Column(database.String(150), nullable=False)
+    location = database.Column(database.String(150), nullable=False)
+    difficulty = database.Column(database.String(20), nullable=False, default="Easy")
+    durationOfDays = database.Column(database.Integer, nullable=False, default=1)
+    totalSlots = database.Column(database.Integer, nullable=False, default=10)
+    slotsAvailable = database.Column(database.Integer, nullable=False, default=10)
+    staffId = database.Column(database.Integer, database.ForeignKey("users.id"), nullable=True)
+    status = database.Column(database.String(20), nullable=False, default=status_pending_trek)
+    startDate = database.Column(database.Date, nullable=False, default=date.today)
+    endDate = database.Column(database.Date, nullable=False, default=date.today)
+    description = database.Column(database.Text, nullable=True)
+    createdAt = database.Column(database.DateTime, default=datetime.utcnow)
 
-    staff = db.relationship(
+    staff = database.relationship(
         "User",
         back_populates="treksAssigned",
         foreign_keys=[staffId],
     )
-    bookings = db.relationship(
+    bookings = database.relationship(
         "Booking",
         back_populates="trek",
         cascade="all, delete-orphan",
@@ -124,19 +124,19 @@ class Trek(db.Model):
         return data
 
 # Bookings Table
-class Booking(db.Model):
+class Booking(database.Model):
     __tablename__ = "bookings"
 
-    id = db.Column(db.Integer, primary_key=True)
-    userId = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
-    trekId = db.Column(db.Integer, db.ForeignKey("treks.id"), nullable=False)
-    bookingDate = db.Column(db.DateTime, default=datetime.utcnow)
-    status = db.Column(db.String(20), nullable=False, default=status_booked_booking)
+    id = database.Column(database.Integer, primary_key=True)
+    userId = database.Column(database.Integer, database.ForeignKey("users.id"), nullable=False)
+    trekId = database.Column(database.Integer, database.ForeignKey("treks.id"), nullable=False)
+    bookingDate = database.Column(database.DateTime, default=datetime.utcnow)
+    status = database.Column(database.String(20), nullable=False, default=status_booked_booking)
 
-    trekker = db.relationship("User", back_populates="bookings", foreign_keys=[userId])
-    trek = db.relationship("Trek", back_populates="bookings", foreign_keys=[trekId])
+    trekker = database.relationship("User", back_populates="bookings", foreign_keys=[userId])
+    trek = database.relationship("Trek", back_populates="bookings", foreign_keys=[trekId])
 
-    __table_args__ = (db.Index("ix_booking_user_trek", "userId", "trekId"),)
+    __table_args__ = (database.Index("ix_booking_user_trek", "userId", "trekId"),)
 
     def to_dict(self):
         return {
@@ -165,18 +165,18 @@ class Booking(db.Model):
 
 
 # Export Table
-class ExportJob(db.Model):
+class ExportJob(database.Model):
     __tablename__ = "exportJobs"
 
-    id = db.Column(db.Integer, primary_key=True)
-    userId = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
-    celeryTaskId = db.Column(db.String(64), nullable=True)
-    status = db.Column(db.String(20), nullable=False, default="Pending")  # Pending/Running/Done/Failed
-    filePath = db.Column(db.String(255), nullable=True)
-    createdAt = db.Column(db.DateTime, default=datetime.utcnow)
-    completedAt = db.Column(db.DateTime, nullable=True)
+    id = database.Column(database.Integer, primary_key=True)
+    userId = database.Column(database.Integer, database.ForeignKey("users.id"), nullable=False)
+    celeryTaskId = database.Column(database.String(64), nullable=True)
+    status = database.Column(database.String(20), nullable=False, default="Pending")  # Pending/Running/Done/Failed
+    filePath = database.Column(database.String(255), nullable=True)
+    createdAt = database.Column(database.DateTime, default=datetime.utcnow)
+    completedAt = database.Column(database.DateTime, nullable=True)
 
-    user = db.relationship("User", back_populates="exportJobs")
+    user = database.relationship("User", back_populates="exportJobs")
 
     def to_dict(self):
         return {
