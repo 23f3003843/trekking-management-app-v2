@@ -18,14 +18,14 @@ def monthly_report():
     treks_conducted = Trek.query.filter(Trek.status == status_completed_trek, Trek.end_date >= start, Trek.end_date <= end).all()
 
     #Get bookings made during the reporting period
-    bookings_in_range = Booking.query.filter(Booking.booking_date >= start, Booking.booking_date <= end, Booking.status.in_([status_booked_booking, status_completed_booking])).all()
+    bookings_in_range = Booking.query.filter(Booking.bookingDate >= start, Booking.bookingDate <= end, Booking.status.in_([status_booked_booking, status_completed_booking])).all()
     participant_ids = {b.user_id for b in bookings_in_range}
 
     #Five most booked treks during the reporting period
     popularity = (
         database.session.query(Trek.name, func.count(Booking.id).label("cnt"))
         .join(Booking, Booking.trek_id == Trek.id)
-        .filter(Booking.booking_date >= start, Booking.booking_date <= end)
+        .filter(Booking.bookingDate >= start, Booking.bookingDate <= end)
         .group_by(Trek.id)
         .order_by(func.count(Booking.id).desc())
         .limit(5)
