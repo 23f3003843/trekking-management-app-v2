@@ -1,7 +1,7 @@
 import os
 from flask import current_app
 from flask_mail import Message
-from extensions import mail
+from extensions import mail_service
 
 def save_mail_outbox(subject: str, recipients, html_body: str) -> str:
     #Store emails locally when sending is disabled
@@ -20,5 +20,5 @@ def sendEmail(subject: str, recipients, html_body: str):
         return f"suppressed -> written to {path}"
     #Send the email through the configured mail server
     msg = Message(subject=subject, recipients=recipients, html=html_body)
-    mail.send(msg)
+    mail_service.send(msg)
     return "sent"
