@@ -7,15 +7,17 @@ from models import (
     User, Trek, Booking, roleOfAdmin, roleOfStaff, roleOfTrekker,
     status_pending_staff, status_approved_staff, status_blacklisted_staff,
     status_active_trekker, status_blacklisted_trekker,
-    status_pending_trek, status_approved_trek, status_open_trek, trek_status, difficulty,
+    status_pending_trek, status_approved_trek, status_open_trek, trek_status, DIFFICULTY,
     status_booked_booking, status_completed_booking,
 )
 from decorators import check_roles
 
 adminBP = Blueprint("admin", __name__)
 
-def _invalidate_trek_cache():
+
+def _invalidate_trek_cache_manager():
     cache_manager.clear()
+
 
 @adminBP.route("/dashboard", methods=["GET"])
 @check_roles(roleOfAdmin)
@@ -28,21 +30,27 @@ def dashboard():
         "totalTrekkers": User.query.filter_by(role=roleOfTrekker).count(),
         "totalBookings": Booking.query.count(),
     }
-    recent = (Booking.query.order_by(Booking.booking_date.desc()).limit(10).all())
+    recent = (Booking.query.order_by(Booking.bookingDate.desc()).limit(10).all())
     return jsonify(stats=stats, recent_bookings=[b.to_dict() for b in recent])
+
 
 @adminBP.route("/treks", methods=["GET"])
 @check_roles(roleOfAdmin)
 def list_treks():
-    treks = Trek.query.order_by(Trek.created_at.desc()).all()
+    treks = Trek.query.order_by(Trek.createdAt.desc()).all()
     return jsonify(treks=[t.to_dict(for_role="admin") for t in treks])
+
 
 def _parse_trek_payload(data, existing=None):
     errors = {}
     name = (data.get("name") or "").strip()
     location = (data.get("location") or "").strip()
+    # NOTE: JSON keys sent by the frontend are lowercase ("difficulty"),
+    # so we must read "difficulty" here, NOT "DIFFICULTY" (that's the
+    # imported tuple of valid values, a different thing entirely).
     difficulty = data.get("difficulty") or "Easy"
     description = (data.get("description") or "").strip()
+
     try:
         durationOfDays = int(data.get("durationOfDays"))
         if not (1 <= durationOfDays <= 90):
@@ -72,15 +80,18 @@ def _parse_trek_payload(data, existing=None):
         errors["name"] = "Trek name is required."
     if not location:
         errors["location"] = "Location is required."
-    if difficulty not in difficulty:
-        errors["difficulty"] = f"Difficulty must be one of {difficulty}."
+    if difficulty not in DIFFICULTY:
+        errors["difficulty"] = f"Difficulty must be one of {DIFFICULTY}."
 
+    # Key is "difficulty" (lowercase) so create_trek/update_trek can read
+    # fields["difficulty"] without a KeyError.
     return errors, {
         "name": name, "location": location, "difficulty": difficulty,
         "durationOfDays": durationOfDays, "totalSlots": totalSlots,
         "startDate": startDate, "endDate": endDate,
         "description": description,
     }
+
 
 @adminBP.route("/treks", methods=["POST"])
 @check_roles(roleOfAdmin)
@@ -101,6 +112,7 @@ def create_trek():
     database.session.commit()
     _invalidate_trek_cache_manager()
     return jsonify(message=f"Trek '{trek.name}' created.", trek=trek.to_dict("admin")), 201
+
 
 @adminBP.route("/treks/<int:trek_id>", methods=["PUT"])
 @check_roles(roleOfAdmin)
@@ -125,6 +137,7 @@ def update_trek(trek_id):
     _invalidate_trek_cache_manager()
     return jsonify(message=f"Trek '{trek.name}' updated.", trek=trek.to_dict("admin"))
 
+
 @adminBP.route("/treks/<int:trek_id>", methods=["DELETE"])
 @check_roles(roleOfAdmin)
 def delete_trek(trek_id):
@@ -134,6 +147,7 @@ def delete_trek(trek_id):
     database.session.commit()
     _invalidate_trek_cache_manager()
     return jsonify(message=f"Trek '{name}' deleted.")
+
 
 @adminBP.route("/treks/<int:trek_id>/assign", methods=["POST"])
 @check_roles(roleOfAdmin)
@@ -150,19 +164,22 @@ def assign_staff(trek_id):
         trek.status = status_approved_trek
     database.session.commit()
     _invalidate_trek_cache_manager()
-    return jsonify(message=f"{staff.full_name} assigned to '{trek.name}'.", trek=trek.to_dict("admin"))
+    return jsonify(message=f"{staff.fullName} assigned to '{trek.name}'.", trek=trek.to_dict("admin"))
+
 
 @adminBP.route("/staff", methods=["GET"])
 @check_roles(roleOfAdmin)
 def list_staff():
-    staff = User.query.filter_by(role=roleOfStaff).order_by(User.created_at.desc()).all()
+    staff = User.query.filter_by(role=roleOfStaff).order_by(User.createdAt.desc()).all()
     return jsonify(staff=[s.to_dict() for s in staff])
+
 
 @adminBP.route("/trekkers", methods=["GET"])
 @check_roles(roleOfAdmin)
 def list_trekkers():
-    trekkers = User.query.filter_by(role=roleOfTrekker).order_by(User.created_at.desc()).all()
+    trekkers = User.query.filter_by(role=roleOfTrekker).order_by(User.createdAt.desc()).all()
     return jsonify(trekkers=[t.to_dict() for t in trekkers])
+
 
 @adminBP.route("/staff/<int:user_id>/approve", methods=["POST"])
 @check_roles(roleOfAdmin)
@@ -170,7 +187,8 @@ def approve_staff(user_id):
     staff = User.query.filter_by(id=user_id, role=roleOfStaff).first_or_404()
     staff.status = status_approved_staff
     database.session.commit()
-    return jsonify(message=f"{staff.full_name} approved.", user=staff.to_dict())
+    return jsonify(message=f"{staff.fullName} approved.", user=staff.to_dict())
+
 
 @adminBP.route("/users/<int:user_id>/blacklist", methods=["POST"])
 @check_roles(roleOfAdmin)
@@ -180,7 +198,8 @@ def blacklist_user(user_id):
         return jsonify(error="The admin account cannot be blacklisted."), 400
     user.status = status_blacklisted_staff if user.role == roleOfStaff else status_blacklisted_trekker
     database.session.commit()
-    return jsonify(message=f"{user.full_name} blacklisted.", user=user.to_dict())
+    return jsonify(message=f"{user.fullName} blacklisted.", user=user.to_dict())
+
 
 @adminBP.route("/users/<int:user_id>/reinstate", methods=["POST"])
 @check_roles(roleOfAdmin)
@@ -188,7 +207,8 @@ def reinstate_user(user_id):
     user = User.query.get_or_404(user_id)
     user.status = status_approved_staff if user.role == roleOfStaff else status_active_trekker
     database.session.commit()
-    return jsonify(message=f"{user.full_name} reinstated.", user=user.to_dict())
+    return jsonify(message=f"{user.fullName} reinstated.", user=user.to_dict())
+
 
 @adminBP.route("/search", methods=["GET"])
 @check_roles(roleOfAdmin)
@@ -209,21 +229,22 @@ def search():
             base = User.query.filter_by(role=roleOfStaff)
             results = [u.to_dict() for u in (
                 base.filter(User.id == int(q)).all() if by_id else
-                base.filter(or_(User.full_name.ilike(f"%{q}%"), User.email.ilike(f"%{q}%"))).all()
+                base.filter(or_(User.fullName.ilike(f"%{q}%"), User.email.ilike(f"%{q}%"))).all()
             )]
         elif category == "trekkers":
             base = User.query.filter_by(role=roleOfTrekker)
             results = [u.to_dict() for u in (
                 base.filter(User.id == int(q)).all() if by_id else
-                base.filter(or_(User.full_name.ilike(f"%{q}%"), User.email.ilike(f"%{q}%"))).all()
+                base.filter(or_(User.fullName.ilike(f"%{q}%"), User.email.ilike(f"%{q}%"))).all()
             )]
         else:
             return jsonify(error="category must be one of treks/staff/trekkers"), 400
 
     return jsonify(query=q, category=category, results=results)
 
+
 @adminBP.route("/bookings", methods=["GET"])
 @check_roles(roleOfAdmin)
 def all_bookings():
-    bookings = Booking.query.order_by(Booking.booking_date.desc()).all()
+    bookings = Booking.query.order_by(Booking.bookingDate.desc()).all()
     return jsonify(bookings=[b.to_dict() for b in bookings])
