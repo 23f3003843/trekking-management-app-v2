@@ -1,0 +1,43 @@
+body {
+  background-color: white;
+  font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+}
+
+.navbar-brand {
+  letter-spacing: 0.5px;
+}
+
+.card {
+  border: none;
+  border-radius: 0.6rem;
+}
+
+.modal-backdrop-custom {
+  position: fixed;
+  inset: 0;
+  background: black;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 2.5rem 1rem;
+  z-index: 1050;
+  overflow-y: auto;
+}
+
+.modal-card {
+  width: 100%;
+  max-width: 640px;
+}
+
+.table thead {
+  background-color: #212529;
+  color: white;
+}
+
+.toast-fixed {
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  z-index: 2000;
+  min-width: 280px;
+}
