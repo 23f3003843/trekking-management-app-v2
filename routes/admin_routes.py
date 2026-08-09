@@ -5,7 +5,7 @@ from sqlalchemy import or_
 from extensions import database, cache_manager
 from models import (
     User, Trek, Booking, roleOfAdmin, roleOfStaff, roleOfTrekker,
-    status_pendingStaff, status_approved_staff, status_blacklisted_staff,
+    status_pending_staff, status_approved_staff, status_blacklisted_staff,
     status_active_trekker, status_blacklisted_trekker,
     status_pending_trek, status_approved_trek, status_open_trek, trek_status, difficulty,
     status_booked_booking, status_completed_booking,
@@ -24,7 +24,7 @@ def dashboard():
         "totalTreks": Trek.query.count(),
         "openTreks": Trek.query.filter_by(status=status_open_trek).count(),
         "totalStaff": User.query.filter_by(role=roleOfStaff).count(),
-        "pendingStaff": User.query.filter_by(role=roleOfStaff, status=status_pendingStaff).count(),
+        "pendingStaff": User.query.filter_by(role=roleOfStaff, status=status_pending_staff).count(),
         "totalTrekkers": User.query.filter_by(role=roleOfTrekker).count(),
         "totalBookings": Booking.query.count(),
     }

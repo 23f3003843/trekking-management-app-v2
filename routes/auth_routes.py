@@ -1,7 +1,7 @@
 import re
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity, get_jwt
-from extensions import db
+from extensions import database
 from models import User, roleOfStaff, roleOfTrekker, roleOfAdmin, status_pending_staff, status_active_trekker
 
 authenticationBP = Blueprint("auth", __name__)
@@ -48,8 +48,8 @@ def register():
         status=status_pending_staff if role == roleOfStaff else status_active_trekker,
     )
     user.set_password(password)
-    db.session.add(user)
-    db.session.commit()
+    database.session.add(user)
+    database.session.commit()
 
     message = (
         "Staff application submitted. You may log in once an Admin approves your account."
@@ -106,5 +106,5 @@ def update_profile():
             return jsonify(error="Password must be at least 6 characters."), 400
         user.set_password(new_password)
 
-    db.session.commit()
+    database.session.commit()
     return jsonify(message="Profile updated.", user=user.to_dict())
