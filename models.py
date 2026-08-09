@@ -42,10 +42,8 @@ class User(database.Model):
 
     def set_password(self, raw_password: str) -> None:
         self.password_hash = generate_password_hash(raw_password)
-
     def check_password(self, raw_password: str) -> bool:
         return check_password_hash(self.password_hash, raw_password)
-
     def is_blacklisted(self) -> bool:
         return self.status in (
             status_blacklisted_staff,
