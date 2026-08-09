@@ -18,7 +18,7 @@ status_closed_trek = "Closed"
 status_completed_trek = "Completed"
 trek_status = (status_pending_trek, status_approved_trek, status_open_trek, status_closed_trek,status_completed_trek)
 
-difficulty = ("Easy", "Moderate", "Hard")
+DIFFICULTY = ("Easy", "Moderate", "Hard")
 
 status_booked_booking = "Booked"
 status_cancelled_booking = "Cancelled"
@@ -36,7 +36,6 @@ class User(database.Model):
     role = database.Column(database.String(20), nullable=False, default=roleOfTrekker)
     status = database.Column(database.String(20), nullable=False, default=status_active_trekker)
     createdAt = database.Column(database.DateTime, default=datetime.utcnow)
-
     treksAssigned = database.relationship("Trek", back_populates="staff", foreign_keys="Trek.staffId")
     bookings = database.relationship("Booking", back_populates="trekker", foreign_keys="Booking.userId", cascade="all, delete-orphan",)
     exportJobs = database.relationship("ExportJob", back_populates="user", cascade="all, delete-orphan",)
@@ -62,7 +61,6 @@ class User(database.Model):
             "phone": self.phone,
             "createdAt": self.createdAt.isoformat() if self.createdAt else None,
         }
-
         if include_email:
             data["email"] = self.email
 
@@ -120,7 +118,6 @@ class Trek(database.Model):
 
         if for_role in ("admin", "staff"):
             data["active_bookings"] = self.active_booking_count
-
         return data
 
 # Bookings Table
