@@ -2,7 +2,7 @@ from flask import Blueprint, request, jsonify, current_app, send_file
 from flask_jwt_extended import get_jwt_identity
 from sqlalchemy import or_
 from extensions import database, cache_manager
-from models import (Trek, Booking, ExportJob, roleOfTrekker, status_blacklisted_trekker, status_open_trek, difficulty, status_booked_booking, status_cancelled_booking, status_completed_booking)
+from models import (Trek, Booking, ExportJob, roleOfTrekker, status_blacklisted_trekker, status_open_trek, DIFFICULTY, status_booked_booking, status_cancelled_booking, status_completed_booking)
 from decorators import check_roles
 userBP = Blueprint("user", __name__)
 
@@ -64,9 +64,9 @@ def book_trek(trekId):
 @check_roles(roleOfTrekker)
 def my_bookings():
     userId = _current_userId()
-    active = Booking.query.filter_by(userId=userId, status=status_booked_booking).order_by(Booking.booking_date.desc()).all()
-    completed = Booking.query.filter_by(userId=userId, status=status_completed_booking).order_by(Booking.booking_date.desc()).all()
-    cancelled = Booking.query.filter_by(userId=userId, status=status_cancelled_booking).order_by(Booking.booking_date.desc()).all()
+    active = Booking.query.filter_by(userId=userId, status=status_booked_booking).order_by(Booking.bookingDate.desc()).all()
+    completed = Booking.query.filter_by(userId=userId, status=status_completed_booking).order_by(Booking.bookingDate.desc()).all()
+    cancelled = Booking.query.filter_by(userId=userId, status=status_cancelled_booking).order_by(Booking.bookingDate.desc()).all()
     return jsonify(
         active=[b.to_dict() for b in active],
         completed=[b.to_dict() for b in completed],
