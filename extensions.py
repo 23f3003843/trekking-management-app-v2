@@ -13,4 +13,9 @@ cache_manager = Cache()
 mail_service = Mail()
 
 #Celery instance is created
-celery_app = Celery(__name__)
+import os
+celery_app = Celery(
+    __name__,
+    broker=os.environ.get("CELERY_BROKER_URL", "redis://localhost:6379/0"),
+    backend=os.environ.get("CELERY_RESULT_BACKEND", "redis://localhost:6379/0"),
+)

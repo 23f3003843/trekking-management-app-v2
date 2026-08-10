@@ -1,6 +1,9 @@
 from datetime import datetime, date
+from zoneinfo import ZoneInfo
 from werkzeug.security import generate_password_hash, check_password_hash
 from extensions import database
+
+IST = ZoneInfo("Asia/Kolkata")
 
 roleOfAdmin = "admin"
 roleOfStaff = "staff"
@@ -35,7 +38,7 @@ class User(database.Model):
     phone = database.Column(database.String(20), nullable=True)
     role = database.Column(database.String(20), nullable=False, default=roleOfTrekker)
     status = database.Column(database.String(20), nullable=False, default=status_active_trekker)
-    createdAt = database.Column(database.DateTime, default=datetime.utcnow)
+    createdAt = database.Column(database.DateTime, default=lambda: datetime.now(IST))
     treksAssigned = database.relationship("Trek", back_populates="staff", foreign_keys="Trek.staffId")
     bookings = database.relationship("Booking", back_populates="trekker", foreign_keys="Booking.userId", cascade="all, delete-orphan",)
     exportJobs = database.relationship("ExportJob", back_populates="user", cascade="all, delete-orphan",)
@@ -80,7 +83,7 @@ class Trek(database.Model):
     startDate = database.Column(database.Date, nullable=False, default=date.today)
     endDate = database.Column(database.Date, nullable=False, default=date.today)
     description = database.Column(database.Text, nullable=True)
-    createdAt = database.Column(database.DateTime, default=datetime.utcnow)
+    createdAt = database.Column(database.DateTime, default=lambda: datetime.now(IST))
 
     staff = database.relationship(
         "User",
@@ -119,15 +122,15 @@ class Trek(database.Model):
         return data
 
 # Bookings Table
+
 class Booking(database.Model):
     __tablename__ = "bookings"
 
     id = database.Column(database.Integer, primary_key=True)
     userId = database.Column(database.Integer, database.ForeignKey("users.id"), nullable=False)
     trekId = database.Column(database.Integer, database.ForeignKey("treks.id"), nullable=False)
-    bookingDate = database.Column(database.DateTime, default=datetime.utcnow)
+    bookingDate = database.Column(database.DateTime, default=lambda: datetime.now(IST))
     status = database.Column(database.String(20), nullable=False, default=status_booked_booking)
-
     trekker = database.relationship("User", back_populates="bookings", foreign_keys=[userId])
     trek = database.relationship("Trek", back_populates="bookings", foreign_keys=[trekId])
 
@@ -158,7 +161,6 @@ class Booking(database.Model):
             ),
         }
 
-
 # Export Table
 class ExportJob(database.Model):
     __tablename__ = "exportJobs"
@@ -168,9 +170,8 @@ class ExportJob(database.Model):
     celeryTaskId = database.Column(database.String(64), nullable=True)
     status = database.Column(database.String(20), nullable=False, default="Pending")  # Pending/Running/Done/Failed
     filePath = database.Column(database.String(255), nullable=True)
-    createdAt = database.Column(database.DateTime, default=datetime.utcnow)
+    createdAt = database.Column(database.DateTime, default=lambda: datetime.now(IST))
     completedAt = database.Column(database.DateTime, nullable=True)
-
     user = database.relationship("User", back_populates="exportJobs")
 
     def to_dict(self):
