@@ -14,7 +14,7 @@ def _current_staffId():
 def dashboard():
     staffId = _current_staffId()
     #Get treks assigned to the logged-in staff member
-    treks = Trek.query.filter_by(staffId=staffId).order_by(Trek.start_date).all()
+    treks = Trek.query.filter_by(staffId=staffId).order_by(Trek.startDate).all()
     payload = []
     for t in treks:
         d = t.to_dict("staff")
@@ -51,8 +51,8 @@ def update_trek(trekId):
             slots = int(data["slotsAvailable"])
         except (TypeError, ValueError):
             return jsonify(error="slotsAvailable must be an integer."), 400
-        if slots < 0 or slots > trek.total_slots:
-            return jsonify(error=f"slotsAvailable must be between 0 and {trek.total_slots}."), 400
+        if slots < 0 or slots > trek.totalSlots:
+            return jsonify(error=f"slotsAvailable must be between 0 and {trek.totalSlots}."), 400
         trek.slotsAvailable = slots
 
     trek.status = new_status

@@ -23,12 +23,12 @@ def list_open_treks():
     q = Trek.query.filter_by(status=status_open_trek)
     if search:
         q = q.filter(or_(Trek.name.ilike(f"%{search}%"), Trek.location.ilike(f"%{search}%")))
-    if difficulty in difficulty:
+    if difficulty in DIFFICULTY:
         q = q.filter_by(difficulty=difficulty)
     if location:
         q = q.filter(Trek.location.ilike(f"%{location}%"))
 
-    treks = q.order_by(Trek.start_date).all()
+    treks = q.order_by(Trek.startDate).all()
     return jsonify(treks=[t.to_dict("trekker") for t in treks])
 
 @userBP.route("/treks/<int:trekId>", methods=["GET"])
@@ -89,14 +89,14 @@ def cancel_booking(booking_id):
 @userBP.route("/exports", methods=["POST"])
 @check_roles(roleOfTrekker)
 def trigger_export():
-    from tasks import export_booking_history_csv
+    from tasks import bookingHistory_csv
     #Create a record before starting the background export task
     job = ExportJob(userId=_current_userId(), status="Pending")
     database.session.add(job)
     database.session.commit()
 
-    async_result = export_booking_history_csv.delay(job.id)
-    job.celery_task_id = async_result.id
+    async_result = bookingHistory_csv.delay(job.id)
+    job.celeryTaskId = async_result.id
     database.session.commit()
 
     return jsonify(message="Export started. We'll let you know when it's ready.", job=job.to_dict()), 202
@@ -105,7 +105,7 @@ def trigger_export():
 @check_roles(roleOfTrekker)
 #Return export jobs belonging only to the logged-in user
 def list_exports():
-    jobs = ExportJob.query.filter_by(userId=_current_userId()).order_by(ExportJob.created_at.desc()).all()
+    jobs = ExportJob.query.filter_by(userId=_current_userId()).order_by(ExportJob.createdAt.desc()).all()
     return jsonify(jobs=[j.to_dict() for j in jobs])
 
 @userBP.route("/exports/<int:job_id>", methods=["GET"])
@@ -118,6 +118,6 @@ def export_status(job_id):
 @check_roles(roleOfTrekker)
 def download_export(job_id):
     job = ExportJob.query.filter_by(id=job_id, userId=_current_userId()).first_or_404()
-    if job.status != "Done" or not job.file_path:
+    if job.status != "Done" or not job.filePath:
         return jsonify(error="Export is not ready yet."), 409
-    return send_file(job.file_path, as_attachment=True, download_name="booking_history.csv")
+    return send_file(job.filePath, as_attachment=True, download_name="booking_history.csv")

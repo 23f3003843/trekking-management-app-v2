@@ -8,7 +8,6 @@ authenticationBP = Blueprint("auth", __name__)
 
 #Email format to be followed
 email_regex = re.compile(r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
-
 def _validate_registration(data):
     errors = {}
     fullName = (data.get("fullName") or "").strip()
@@ -26,7 +25,6 @@ def _validate_registration(data):
     if role not in (roleOfStaff, roleOfTrekker):
         errors["role"] = "Role must be 'staff' or 'trekker' (admin cannot self-register)."
     return errors, fullName, email, password, role
-
 
 @authenticationBP.route("/register", methods=["POST"])
 def register():
