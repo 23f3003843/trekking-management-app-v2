@@ -35,10 +35,10 @@ def bookingHistory_csv(self, export_job_id: int):
                 ])
 
         job.status = "Done"
-        job.file_path = filepath
+        job.filePath = filepath
         job.completedAt = datetime.utcnow()
         database.session.commit()
-        return {"status": "Done", "file_path": filepath, "rows": len(bookings)}
+        return {"status": "Done", "filePath": filepath, "rows": len(bookings)}
     
     except Exception as exc:
         job.status = "Failed"
