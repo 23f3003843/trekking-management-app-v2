@@ -1,43 +1,504 @@
-body {
-  background-color: white;
-  font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+/* =========================================================================
+   Trek Manager — "Basecamp" design system
+   A field-expedition aesthetic: contour lines, trail blazes, paper ledgers.
+   ========================================================================= */
+
+:root {
+  --ink: #1B2A22;
+  --ink-soft: #46574A;
+  --paper: #EFE8D8;
+  --paper-raised: #FBF7EC;
+  --paper-line: #D8CCAC;
+  --moss: #45613A;
+  --moss-dark: #314528;
+  --moss-tint: #E1E8D9;
+  --slate: #345A6C;
+  --slate-tint: #DCE6E9;
+  --khaki: #8C7F5C;
+  --khaki-tint: #E9E2CC;
+  --ember: #9C3A2B;
+  --ember-tint: #F1DCD5;
+  --amber: #A2781F;
+  --amber-tint: #F0E3C2;
+
+  --font-display: "Big Shoulders Display", sans-serif;
+  --font-body: "IBM Plex Sans", sans-serif;
+  --font-mono: "IBM Plex Mono", monospace;
+
+  --sidebar-w: 232px;
+  --clip: 20px;
 }
 
-.navbar-brand {
-  letter-spacing: 0.5px;
+* { box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  background-color: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 0.97rem;
+  line-height: 1.55;
 }
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  letter-spacing: 0.2px;
+  color: var(--ink);
+}
+
+h2 { font-size: 2rem; }
+h3 { font-size: 1.5rem; }
+
+a { color: var(--slate); }
+a:hover { color: var(--moss-dark); }
+
+::selection { background: var(--moss); color: var(--paper-raised); }
+
+:focus-visible {
+  outline: 2px solid var(--slate);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * { animation: none !important; transition: none !important; }
+}
+
+/* -------------------------------------------------------------------------
+   App shell / sidebar ("the rail")
+   ------------------------------------------------------------------------- */
+
+.app-shell {
+  display: flex;
+  min-height: 100vh;
+  align-items: stretch;
+}
+
+.side-rail {
+  width: var(--sidebar-w);
+  flex-shrink: 0;
+  background: var(--ink);
+  color: var(--paper);
+  display: flex;
+  flex-direction: column;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+  background-image:
+    repeating-radial-gradient(circle at 18% 12%, rgba(239,232,216,0.05) 0, rgba(239,232,216,0.05) 1px, transparent 1px, transparent 14px);
+}
+
+.rail-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 1.5rem 1.25rem 1.1rem;
+  text-decoration: none;
+  color: var(--paper) !important;
+  border-bottom: 1px solid rgba(239,232,216,0.16);
+}
+
+.rail-brand-mark {
+  font-family: var(--font-display);
+  font-size: 1.4rem;
+  line-height: 1;
+  color: var(--moss-tint);
+  transform: translateY(-1px);
+}
+
+.rail-brand-text {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 1.2rem;
+  line-height: 1.02;
+  letter-spacing: 0.3px;
+}
+
+.rail-nav {
+  padding: 1.1rem 0.9rem 0.4rem;
+  position: relative;
+}
+
+.rail-link {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.55rem 0.6rem;
+  margin-bottom: 0.1rem;
+  border-radius: 2px;
+  color: rgba(239,232,216,0.78) !important;
+  text-decoration: none;
+  font-size: 0.92rem;
+  position: relative;
+}
+
+.rail-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: rgba(239,232,216,0.35);
+  flex-shrink: 0;
+}
+
+.rail-link:hover {
+  background: rgba(239,232,216,0.08);
+  color: var(--paper) !important;
+}
+
+.rail-link.router-link-active {
+  background: rgba(239,232,216,0.1);
+  color: var(--paper) !important;
+}
+
+.rail-link.router-link-active .rail-dot {
+  background: var(--moss-tint);
+  box-shadow: 0 0 0 3px rgba(225, 232, 217, 0.18);
+}
+
+.rail-spacer { flex: 1; }
+
+.rail-user {
+  padding: 1rem 1.25rem 1.3rem;
+  border-top: 1px solid rgba(239,232,216,0.16);
+}
+
+.rail-user-name {
+  font-weight: 600;
+  font-size: 0.92rem;
+}
+
+.rail-user-role {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.3px;
+  color: var(--khaki-tint);
+  margin-bottom: 0.7rem;
+}
+
+.rail-logout {
+  background: transparent;
+  border: 1px solid rgba(239,232,216,0.35);
+  color: var(--paper);
+  font-size: 0.82rem;
+  padding: 0.35rem 0.8rem;
+  border-radius: 2px;
+}
+
+.rail-logout:hover { background: rgba(239,232,216,0.12); }
+
+.app-main {
+  flex: 1;
+  min-width: 0;
+  padding: 2.4rem 2.6rem 3rem;
+}
+
+@media (max-width: 860px) {
+  .app-shell { flex-direction: column; }
+  .side-rail {
+    width: 100%;
+    height: auto;
+    position: relative;
+    flex-direction: row;
+    align-items: center;
+    overflow-x: auto;
+  }
+  .rail-brand { border-bottom: none; border-right: 1px solid rgba(239,232,216,0.16); padding: 0.9rem 1rem; }
+  .rail-nav { display: flex; padding: 0 0.5rem; white-space: nowrap; }
+  .rail-link { margin-right: 0.15rem; }
+  .rail-spacer { display: none; }
+  .rail-user { border-top: none; border-left: 1px solid rgba(239,232,216,0.16); display: flex; align-items: center; gap: 0.6rem; padding: 0.6rem 1rem; }
+  .rail-user-role { margin-bottom: 0; }
+  .app-main { padding: 1.6rem 1.1rem 2.2rem; }
+}
+
+/* -------------------------------------------------------------------------
+   Cards — the "field card" motif: one clipped corner, no drop shadows
+   ------------------------------------------------------------------------- */
 
 .card {
-  border: none;
-  border-radius: 0.6rem;
+  background: var(--paper-raised);
+  border: 1px solid var(--paper-line);
+  border-radius: 0;
+  clip-path: polygon(0 0, calc(100% - 16px) 0, 100% 16px, 100% 100%, 0 100%);
+  box-shadow: none !important;
 }
 
-.modal-backdrop-custom {
-  position: fixed;
-  inset: 0;
-  background: black;
-  display: flex;
-  align-items: flex-start;
-  justify-content: center;
-  padding: 2.5rem 1rem;
-  z-index: 1050;
-  overflow-y: auto;
+.card-body { padding: 1.15rem 1.3rem; }
+
+.card-title {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.3rem;
 }
 
-.modal-card {
-  width: 100%;
-  max-width: 640px;
+.modal-backdrop-custom { background: rgba(27, 42, 34, 0.72); }
+
+/* -------------------------------------------------------------------------
+   Buttons — flat, sharp, one accent doing the work
+   ------------------------------------------------------------------------- */
+
+.btn {
+  border-radius: 2px;
+  font-weight: 500;
+  padding: 0.45rem 1.05rem;
+  transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
 }
+
+.btn-success {
+  background: var(--moss);
+  border-color: var(--moss);
+}
+.btn-success:hover, .btn-success:focus {
+  background: var(--moss-dark);
+  border-color: var(--moss-dark);
+}
+
+.btn-outline-success {
+  color: var(--moss-dark);
+  border-color: var(--moss);
+}
+.btn-outline-success:hover {
+  background: var(--moss);
+  border-color: var(--moss);
+}
+
+.btn-outline-primary {
+  color: var(--slate);
+  border-color: var(--slate);
+}
+.btn-outline-primary:hover {
+  background: var(--slate);
+  border-color: var(--slate);
+}
+
+.btn-outline-secondary {
+  color: var(--khaki);
+  border-color: var(--khaki);
+}
+.btn-outline-secondary:hover {
+  background: var(--khaki);
+  border-color: var(--khaki);
+  color: var(--paper-raised);
+}
+
+.btn-outline-danger {
+  color: var(--ember);
+  border-color: var(--ember);
+}
+.btn-outline-danger:hover {
+  background: var(--ember);
+  border-color: var(--ember);
+}
+
+.btn-outline-light {
+  color: var(--paper);
+  border-color: rgba(239,232,216,0.6);
+}
+.btn-outline-light:hover {
+  background: rgba(239,232,216,0.14);
+  border-color: var(--paper);
+  color: var(--paper);
+}
+
+/* -------------------------------------------------------------------------
+   Badges — trail blazes: a small paint-mark dot ahead of the label
+   ------------------------------------------------------------------------- */
+
+.badge {
+  border-radius: 2px;
+  font-weight: 500;
+  font-size: 0.76rem;
+  padding: 0.38em 0.6em 0.38em 0.5em;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4em;
+}
+
+.badge::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+  flex-shrink: 0;
+}
+
+.badge.bg-success { background: var(--moss-tint) !important; color: var(--moss-dark) !important; }
+.badge.bg-danger  { background: var(--ember-tint) !important; color: var(--ember) !important; }
+.badge.bg-warning { background: var(--amber-tint) !important; color: var(--amber) !important; }
+.badge.bg-info    { background: var(--slate-tint) !important; color: var(--slate) !important; }
+.badge.bg-secondary { background: var(--khaki-tint) !important; color: var(--khaki) !important; }
+
+/* -------------------------------------------------------------------------
+   Tables — ledger lines
+   ------------------------------------------------------------------------- */
+
+.table { color: var(--ink); }
 
 .table thead {
-  background-color: #212529;
-  color: white;
+  background-color: var(--ink) !important;
+  color: var(--paper) !important;
 }
 
-.toast-fixed {
-  position: fixed;
-  top: 1rem;
-  right: 1rem;
-  z-index: 2000;
-  min-width: 280px;
+.table thead th {
+  font-family: var(--font-mono);
+  font-weight: 500;
+  font-size: 0.76rem;
+  letter-spacing: 0.2px;
+  border: none;
+}
+
+.table td, .table th { border-color: var(--paper-line); vertical-align: middle; }
+
+.table-striped > tbody > tr:nth-of-type(odd) > * {
+  background-color: rgba(140, 127, 92, 0.07);
+}
+
+.table-hover > tbody > tr:hover > * {
+  background-color: var(--moss-tint);
+}
+
+/* -------------------------------------------------------------------------
+   Forms
+   ------------------------------------------------------------------------- */
+
+.form-label {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--ink-soft);
+}
+
+.form-control, .form-select {
+  background: var(--paper-raised);
+  border: 1px solid var(--paper-line);
+  border-radius: 2px;
+  color: var(--ink);
+}
+
+.form-control:focus, .form-select:focus {
+  border-color: var(--slate);
+  box-shadow: 0 0 0 3px var(--slate-tint);
+  background: var(--paper-raised);
+}
+
+/* -------------------------------------------------------------------------
+   Alerts
+   ------------------------------------------------------------------------- */
+
+.alert { border-radius: 2px; border: 1px solid transparent; }
+.alert-danger { background: var(--ember-tint); color: var(--ember); border-color: var(--ember); }
+.alert-success { background: var(--moss-tint); color: var(--moss-dark); border-color: var(--moss); }
+.alert-info { background: var(--slate-tint); color: var(--slate); border-color: var(--slate); }
+
+/* -------------------------------------------------------------------------
+   Dashboard stat readouts — instrument-style numbers
+   ------------------------------------------------------------------------- */
+
+.display-6 {
+  font-family: var(--font-mono);
+  font-weight: 600;
+  color: var(--moss-dark);
+}
+
+/* -------------------------------------------------------------------------
+   Home page — the trailhead
+   ------------------------------------------------------------------------- */
+
+.trailhead {
+  min-height: calc(100vh - 2rem);
+  display: flex;
+  align-items: center;
+  padding: 2rem 0;
+}
+
+.trailhead-panel {
+  background: var(--ink);
+  color: var(--paper);
+  clip-path: polygon(0 0, calc(100% - 34px) 0, 100% 34px, 100% 100%, 0 100%);
+  padding: 3.2rem 3rem;
+  position: relative;
+  overflow: hidden;
+  max-width: 760px;
+  margin: 0 auto;
+}
+
+.trailhead-panel::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image:
+    repeating-radial-gradient(circle at 85% 20%, rgba(239,232,216,0.07) 0, rgba(239,232,216,0.07) 1px, transparent 1px, transparent 16px),
+    repeating-radial-gradient(circle at 85% 20%, rgba(239,232,216,0.05) 0, rgba(239,232,216,0.05) 1px, transparent 1px, transparent 32px);
+  pointer-events: none;
+}
+
+.trailhead-eyebrow-mark {
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  color: var(--moss-tint);
+  margin-bottom: 0.4rem;
+}
+
+.trailhead-title {
+  font-size: clamp(2.4rem, 5vw, 3.6rem);
+  line-height: 1.03;
+  margin-bottom: 1rem;
+  max-width: 14ch;
+}
+
+.trailhead-lede {
+  font-size: 1.05rem;
+  color: rgba(239,232,216,0.82);
+  max-width: 46ch;
+  margin-bottom: 1.9rem;
+}
+
+.trailhead-cta { display: flex; gap: 0.75rem; flex-wrap: wrap; margin-bottom: 2.1rem; }
+
+.trailhead-stats {
+  display: flex;
+  gap: 2.2rem;
+  flex-wrap: wrap;
+  border-top: 1px solid rgba(239,232,216,0.2);
+  padding-top: 1.4rem;
+  position: relative;
+}
+
+.trailhead-stat-value {
+  font-family: var(--font-mono);
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: var(--moss-tint);
+  display: block;
+}
+
+.trailhead-stat-label {
+  font-size: 0.78rem;
+  color: rgba(239,232,216,0.62);
+}
+
+/* -------------------------------------------------------------------------
+   Auth cards (login / register)
+   ------------------------------------------------------------------------- */
+
+.auth-shell {
+  min-height: calc(100vh - 2rem);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.auth-card { width: 100%; }
+
+.auth-heading {
+  font-size: 1.7rem;
+  margin-bottom: 0.2rem;
+}
+
+.auth-subheading {
+  color: var(--ink-soft);
+  font-size: 0.88rem;
+  margin-bottom: 1.4rem;
 }

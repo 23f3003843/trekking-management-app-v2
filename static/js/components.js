@@ -1,45 +1,81 @@
 const NavBar = {
   props: ["user"],
   emits: ["logout"],
+  computed: {
+    navItems() {
+      if (!this.user) return [];
+      if (this.user.role === "admin") {
+        return [
+          { to: "/admin/dashboard", label: "Dashboard" },
+          { to: "/admin/treks", label: "Treks" },
+          { to: "/admin/people", label: "People" },
+          { to: "/admin/search", label: "Search" },
+        ];
+      }
+      if (this.user.role === "staff") {
+        return [{ to: "/staff/dashboard", label: "My Treks" }];
+      }
+      return [
+        { to: "/user/dashboard", label: "Browse Treks" },
+        { to: "/user/bookings", label: "My Bookings" },
+        { to: "/user/exports", label: "Export History" },
+        { to: "/user/profile", label: "Profile" },
+      ];
+    },
+  },
   template: `
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark px-3 mb-4">
-      <router-link class="navbar-brand fw-bold" to="/">
-        <i class="bi bi-flag-fill me-1"></i> Trek Manager
+    <aside class="side-rail">
+      <router-link class="rail-brand" to="/">
+        <span class="rail-brand-mark">&#9650;</span>
+        <span class="rail-brand-text">Trek<br>Manager</span>
       </router-link>
-      <div class="collapse navbar-collapse show">
-        <ul class="navbar-nav me-auto" v-if="user">
-          <template v-if="user.role === 'admin'">
-            <li class="nav-item"><router-link class="nav-link" to="/admin/dashboard">Dashboard</router-link></li>
-            <li class="nav-item"><router-link class="nav-link" to="/admin/treks">Treks</router-link></li>
-            <li class="nav-item"><router-link class="nav-link" to="/admin/people">People</router-link></li>
-            <li class="nav-item"><router-link class="nav-link" to="/admin/search">Search</router-link></li>
-          </template>
-          <template v-else-if="user.role === 'staff'">
-            <li class="nav-item"><router-link class="nav-link" to="/staff/dashboard">My Treks</router-link></li>
-          </template>
-          <template v-else-if="user.role === 'trekker'">
-            <li class="nav-item"><router-link class="nav-link" to="/user/dashboard">Browse Treks</router-link></li>
-            <li class="nav-item"><router-link class="nav-link" to="/user/bookings">My Bookings</router-link></li>
-            <li class="nav-item"><router-link class="nav-link" to="/user/exports">Export History</router-link></li>
-            <li class="nav-item"><router-link class="nav-link" to="/user/profile">Profile</router-link></li>
-          </template>
-        </ul>
-        <span class="navbar-text text-white me-3" v-if="user">
-          <i class="bi bi-person-circle me-1"></i>{{ user.full_name }} <span class="badge bg-secondary text-capitalize">{{ user.role }}</span>
-        </span>
-        <button v-if="user" class="btn btn-outline-light btn-sm" @click="$emit('logout')">Log out</button>
+      <nav class="rail-nav" v-if="user">
+        <router-link v-for="item in navItems" :key="item.to" class="rail-link" :to="item.to">
+          <span class="rail-dot"></span>{{ item.label }}
+        </router-link>
+      </nav>
+      <div class="rail-spacer"></div>
+      <div class="rail-user" v-if="user">
+        <div>
+          <div class="rail-user-name">{{ user.fullName }}</div>
+          <div class="rail-user-role">{{ user.role }}</div>
+        </div>
+        <button class="rail-logout" @click="$emit('logout')">Log out</button>
       </div>
-    </nav>`,
+    </aside>`,
 };
 
 const homePage = {
   template: `
-    <div class="container text-center py-5">
-      <i class="bi bi-flag-fill display-1 text-success"></i>
-      <h1 class="mt-3">Welcome to Trek Manager</h1>
-      <p class="lead text-muted">Discover, book, and manage trekking adventures.</p>
-      <router-link to="/login" class="btn btn-success btn-lg me-2">Log In</router-link>
-      <router-link to="/register" class="btn btn-outline-success btn-lg">Register</router-link>
+    <div class="container trailhead">
+      <div class="trailhead-panel">
+        <div class="trailhead-eyebrow-mark">&#9650;</div>
+        <h1 class="trailhead-title">Plan the route. Lead the climb.</h1>
+        <p class="trailhead-lede">
+          Trek Manager keeps every trekking outfit organized end to end — trek
+          scheduling for admins, participant rosters for guides on the trail,
+          and a straightforward way for trekkers to find and book their next
+          route.
+        </p>
+        <div class="trailhead-cta">
+          <router-link to="/login" class="btn btn-success btn-lg">Log In</router-link>
+          <router-link to="/register" class="btn btn-outline-light btn-lg">Register</router-link>
+        </div>
+        <div class="trailhead-stats">
+          <div>
+            <span class="trailhead-stat-value">3</span>
+            <span class="trailhead-stat-label">roles, one shared ledger</span>
+          </div>
+          <div>
+            <span class="trailhead-stat-value">Easy&ndash;Hard</span>
+            <span class="trailhead-stat-label">difficulty grades tracked</span>
+          </div>
+          <div>
+            <span class="trailhead-stat-value">24/7</span>
+            <span class="trailhead-stat-label">booking &amp; export access</span>
+          </div>
+        </div>
+      </div>
     </div>`,
 };
 
@@ -60,10 +96,11 @@ const loginPage = {
     },
   },
   template: `
-    <div class="container" style="max-width:420px;">
-      <div class="card shadow-sm mt-5">
+    <div class="container auth-shell">
+      <div class="card shadow-sm auth-card" style="max-width:420px;">
         <div class="card-body p-4">
-          <h3 class="card-title mb-3 text-center">Log In</h3>
+          <h3 class="auth-heading">Log in</h3>
+          <p class="auth-subheading">Enter the basecamp with your account.</p>
           <div class="alert alert-danger py-2" v-if="error">{{ error }}</div>
           <form @submit.prevent="submit">
             <div class="mb-3">
@@ -108,10 +145,11 @@ const registerPage = {
     },
   },
   template: `
-    <div class="container" style="max-width:480px;">
-      <div class="card shadow-sm mt-5">
+    <div class="container auth-shell">
+      <div class="card shadow-sm auth-card" style="max-width:480px;">
         <div class="card-body p-4">
-          <h3 class="card-title mb-3 text-center">Register</h3>
+          <h3 class="auth-heading">Register</h3>
+          <p class="auth-subheading">Join Trek Manager as a trekker or trail staff.</p>
           <div class="alert alert-danger py-2" v-if="error">{{ error }}</div>
           <div class="alert alert-success py-2" v-if="success">
             {{ success }} <router-link to="/login">Go to login</router-link>
@@ -154,7 +192,7 @@ const adminDashboard = {
       <h2 class="mb-4">Admin Dashboard</h2>
       <div class="row g-3 mb-4">
         <div class="col-md-2 col-6" v-for="(v,k) in stats" :key="k">
-          <div class="card text-center shadow-sm h-100">
+          <div class="card text-center h-100">
             <div class="card-body">
               <div class="display-6">{{ v }}</div>
               <div class="text-muted small text-capitalize">{{ k.replaceAll('_',' ') }}</div>
@@ -238,7 +276,7 @@ const adminTreks = {
         <h2>Treks</h2>
         <button class="btn btn-success" @click="openNew"><i class="bi bi-plus-lg"></i> New Trek</button>
       </div>
-      <table class="table table-striped bg-white shadow-sm">
+      <table class="table table-striped bg-white">
         <thead><tr>
           <th>Name</th><th>Location</th><th>Difficulty</th><th>Slots</th>
           <th>Status</th><th>Staff</th><th>Dates</th><th></th>
@@ -260,7 +298,7 @@ const adminTreks = {
       </table>
 
       <div class="modal-backdrop-custom" v-if="showModal" @click.self="showModal=false">
-        <div class="card shadow modal-card">
+        <div class="card modal-card">
           <div class="card-body">
             <h5>{{ editing ? 'Edit Trek' : 'New Trek' }}</h5>
             <div class="alert alert-danger py-2" v-if="error">{{ error }}</div>
@@ -309,7 +347,7 @@ const adminPeople = {
         <li class="nav-item"><a class="nav-link" :class="{active: tab==='staff'}" href="#" @click.prevent="tab='staff'">Trek Staff</a></li>
         <li class="nav-item"><a class="nav-link" :class="{active: tab==='trekkers'}" href="#" @click.prevent="tab='trekkers'">Trekkers</a></li>
       </ul>
-      <table class="table table-striped bg-white shadow-sm">
+      <table class="table table-striped bg-white">
         <thead><tr><th>ID</th><th>Name</th><th>Email</th><th>Phone</th><th>Status</th><th></th></tr></thead>
         <tbody>
           <tr v-for="u in (tab==='staff'?staff:trekkers)" :key="u.id">
@@ -350,7 +388,7 @@ const adminSearch = {
         <div class="col-auto"><button class="btn btn-success">Search</button></div>
       </form>
 
-      <table class="table table-striped bg-white shadow-sm" v-if="category==='treks'">
+      <table class="table table-striped bg-white" v-if="category==='treks'">
         <thead><tr><th>ID</th><th>Name</th><th>Location</th><th>Difficulty</th><th>Status</th></tr></thead>
         <tbody>
           <tr v-for="r in results" :key="r.id">
@@ -358,7 +396,7 @@ const adminSearch = {
           </tr>
         </tbody>
       </table>
-      <table class="table table-striped bg-white shadow-sm" v-else>
+      <table class="table table-striped bg-white" v-else>
         <thead><tr><th>ID</th><th>Name</th><th>Email</th><th>Status</th></tr></thead>
         <tbody>
           <tr v-for="r in results" :key="r.id">
@@ -379,7 +417,7 @@ const staffDashboard = {
       <div class="alert alert-info" v-if="!treks.length">No treks assigned yet.</div>
       <div class="row g-3">
         <div class="col-md-4" v-for="t in treks" :key="t.id">
-          <div class="card shadow-sm h-100">
+          <div class="card h-100">
             <div class="card-body">
               <h5>{{ t.name }}</h5>
               <p class="mb-1 text-muted">{{ t.location }} • {{ t.difficulty }}</p>
@@ -421,7 +459,7 @@ const staffTrekDetails = {
       <div class="alert alert-success py-2" v-if="msg">{{ msg }}</div>
       <div class="row">
         <div class="col-md-5">
-          <div class="card shadow-sm p-3 mb-3">
+          <div class="card p-3 mb-3">
             <h6>Update Trek</h6>
             <div class="mb-2">
               <label class="form-label">Status</label>
@@ -483,7 +521,7 @@ const userDashboard = {
       </form>
       <div class="row g-3">
         <div class="col-md-4" v-for="t in treks" :key="t.id">
-          <div class="card shadow-sm h-100">
+          <div class="card h-100">
             <div class="card-body">
               <h5>{{ t.name }}</h5>
               <p class="mb-1 text-muted">{{ t.location }} • {{ t.difficulty }} • {{ t.durationOfDays }}d</p>
@@ -518,7 +556,7 @@ const userBookings = {
     <div class="container">
       <h2 class="mb-3">My Bookings</h2>
       <h6>Active</h6>
-      <table class="table table-sm bg-white shadow-sm mb-4">
+      <table class="table table-sm bg-white mb-4">
         <thead><tr><th>Trek</th><th>Location</th><th>Dates</th><th></th></tr></thead>
         <tbody>
           <tr v-for="b in active" :key="b.id">
@@ -528,11 +566,11 @@ const userBookings = {
         </tbody>
       </table>
       <h6>Completed</h6>
-      <table class="table table-sm bg-white shadow-sm mb-4">
+      <table class="table table-sm bg-white mb-4">
         <tbody><tr v-for="b in completed" :key="b.id"><td>{{ b.trek_name }}</td><td>{{ b.location }}</td><td>{{ b.startDate }} → {{ b.endDate }}</td></tr></tbody>
       </table>
       <h6>Cancelled</h6>
-      <table class="table table-sm bg-white shadow-sm">
+      <table class="table table-sm bg-white">
         <tbody><tr v-for="b in cancelled" :key="b.id"><td>{{ b.trek_name }}</td><td>{{ b.location }}</td></tr></tbody>
       </table>
     </div>`,
@@ -555,7 +593,7 @@ const userProfile = {
     <div class="container" style="max-width:480px;">
       <h2 class="mb-3">My Profile</h2>
       <div class="alert alert-success py-2" v-if="msg">{{ msg }}</div>
-      <form @submit.prevent="save" class="card p-3 shadow-sm">
+      <form @submit.prevent="save" class="card p-3">
         <div class="mb-2"><label class="form-label">Full Name</label><input v-model="form.fullName" class="form-control"></div>
         <div class="mb-2"><label class="form-label">Phone</label><input v-model="form.phone" class="form-control"></div>
         <div class="mb-2"><label class="form-label">New Password (optional)</label><input type="password" v-model="form.password" class="form-control"></div>
@@ -577,7 +615,7 @@ const userExports = {
       <h2 class="mb-3">Export Booking History</h2>
       <button class="btn btn-success me-2 mb-3" @click="trigger">Export as CSV</button>
       <button class="btn btn-outline-secondary mb-3" @click="refresh">Refresh Status</button>
-      <table class="table bg-white shadow-sm">
+      <table class="table bg-white">
         <thead><tr><th>Job</th><th>Status</th><th>Requested</th><th></th></tr></thead>
         <tbody>
           <tr v-for="j in jobs" :key="j.id">

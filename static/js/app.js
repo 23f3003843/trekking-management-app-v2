@@ -50,8 +50,12 @@ const App = {
     },
   },
   template: `
-    <nav-bar :user="state.user" @logout="logout"></nav-bar>
-    <router-view @logged-in="onLoggedIn"></router-view>
+    <div class="app-shell">
+      <nav-bar :user="state.user" @logout="logout"></nav-bar>
+      <main class="app-main">
+        <router-view @logged-in="onLoggedIn"></router-view>
+      </main>
+    </div>
   `,
 };
 
