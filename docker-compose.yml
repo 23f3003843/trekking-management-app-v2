@@ -35,20 +35,14 @@ services:
     restart: always
     ports:
       - "5001:5000"
+    env_file:
+      - .env
     environment:
-      - SECRET_KEY=tma-production-secret-key-change-this-in-env-32bytes
-      - JWT_SECRET_KEY=tma-production-jwt-secret-key-change-this-32bytes
       - DATABASE_URL=postgresql://trek_user:trek_password@db:5432/trekmanager
       - REDIS_URL=redis://redis:6379/0
       - CELERY_BROKER_URL=redis://redis:6379/0
       - CELERY_RESULT_BACKEND=redis://redis:6379/0
       - CACHE_TYPE=RedisCache
-      - ADMIN_EMAIL=admin@trekmanager.com
-      - ADMIN_PASSWORD=Admin@12345
-      - ADMIN_NAME=System Administrator
-      - MAIL_SERVER=localhost
-      - MAIL_PORT=25
-      - MAIL_SUPPRESS_SEND=true
     volumes:
       - exports_data:/app/instance/exports
     depends_on:
@@ -62,14 +56,13 @@ services:
     container_name: tma_celery_worker
     restart: always
     command: celery -A celery_worker.celery_app worker --loglevel=info
+    env_file:
+      - .env
     environment:
-      - SECRET_KEY=tma-production-secret-key-change-this-in-env-32bytes
-      - JWT_SECRET_KEY=tma-production-jwt-secret-key-change-this-32bytes
       - DATABASE_URL=postgresql://trek_user:trek_password@db:5432/trekmanager
       - REDIS_URL=redis://redis:6379/0
       - CELERY_BROKER_URL=redis://redis:6379/0
       - CELERY_RESULT_BACKEND=redis://redis:6379/0
-      - MAIL_SUPPRESS_SEND=true
     volumes:
       - exports_data:/app/instance/exports
     depends_on:
@@ -83,14 +76,13 @@ services:
     container_name: tma_celery_beat
     restart: always
     command: celery -A celery_worker.celery_app beat --loglevel=info
+    env_file:
+      - .env
     environment:
-      - SECRET_KEY=tma-production-secret-key-change-this-in-env-32bytes
-      - JWT_SECRET_KEY=tma-production-jwt-secret-key-change-this-32bytes
       - DATABASE_URL=postgresql://trek_user:trek_password@db:5432/trekmanager
       - REDIS_URL=redis://redis:6379/0
       - CELERY_BROKER_URL=redis://redis:6379/0
       - CELERY_RESULT_BACKEND=redis://redis:6379/0
-      - MAIL_SUPPRESS_SEND=true
     volumes:
       - exports_data:/app/instance/exports
     depends_on:
