@@ -38,10 +38,10 @@ services:
     env_file:
       - .env
     environment:
-      - DATABASE_URL=postgresql://trek_user:x2wfje8GnrTFXRVdV39sAmHu1y0CRYTW@dpg-dapujt142hec73e8cc10-a/trekmanager
-      - REDIS_URL=redis://red-dapulujtqb8s73drjslg:6379
-      - CELERY_BROKER_URL=redis://red-dapulujtqb8s73drjslg:6379
-      - CELERY_RESULT_BACKEND=redis://red-dapulujtqb8s73drjslg:6379
+      - DATABASE_URL=postgresql://trek_user:trek_password@db:5432/trekmanager
+      - REDIS_URL=redis://redis:6379/0
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
       - CACHE_TYPE=RedisCache
     volumes:
       - exports_data:/app/instance/exports
@@ -59,10 +59,10 @@ services:
     env_file:
       - .env
     environment:
-      - DATABASE_URL=postgresql://trek_user:x2wfje8GnrTFXRVdV39sAmHu1y0CRYTW@dpg-dapujt142hec73e8cc10-a/trekmanager
-      - REDIS_URL=redis://red-dapulujtqb8s73drjslg:6379
-      - CELERY_BROKER_URL=redis://red-dapulujtqb8s73drjslg:6379
-      - CELERY_RESULT_BACKEND=redis://red-dapulujtqb8s73drjslg:6379
+      - DATABASE_URL=postgresql://trek_user:trek_password@db:5432/trekmanager
+      - REDIS_URL=redis://redis:6379/0
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
     volumes:
       - exports_data:/app/instance/exports
     depends_on:
@@ -79,10 +79,10 @@ services:
     env_file:
       - .env
     environment:
-      - DATABASE_URL=postgresql://trek_user:x2wfje8GnrTFXRVdV39sAmHu1y0CRYTW@dpg-dapujt142hec73e8cc10-a/trekmanager
-      - REDIS_URL=redis://red-dapulujtqb8s73drjslg:6379
-      - CELERY_BROKER_URL=redis://red-dapulujtqb8s73drjslg:6379
-      - CELERY_RESULT_BACKEND=redis://red-dapulujtqb8s73drjslg:6379
+      - DATABASE_URL=postgresql://trek_user:trek_password@db:5432/trekmanager
+      - REDIS_URL=redis://redis:6379/0
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
     volumes:
       - exports_data:/app/instance/exports
     depends_on:
