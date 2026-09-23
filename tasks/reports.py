@@ -15,16 +15,16 @@ def previous_month_date(today: date):
 @celery_app.task(name="tasks.monthly_report")
 def monthly_report():
     start, end = previous_month_date(date.today())
-    treks_conducted = Trek.query.filter(Trek.status == status_completed_trek, Trek.end_date >= start, Trek.end_date <= end).all()
+    treks_conducted = Trek.query.filter(Trek.status == status_completed_trek, Trek.endDate >= start, Trek.endDate <= end).all()
 
     #Get bookings made during the reporting period
     bookings_in_range = Booking.query.filter(Booking.bookingDate >= start, Booking.bookingDate <= end, Booking.status.in_([status_booked_booking, status_completed_booking])).all()
-    participant_ids = {b.user_id for b in bookings_in_range}
+    participant_ids = {b.userId for b in bookings_in_range}
 
     #Five most booked treks during the reporting period
     popularity = (
         database.session.query(Trek.name, func.count(Booking.id).label("cnt"))
-        .join(Booking, Booking.trek_id == Trek.id)
+        .join(Booking, Booking.trekId == Trek.id)
         .filter(Booking.bookingDate >= start, Booking.bookingDate <= end)
         .group_by(Trek.id)
         .order_by(func.count(Booking.id).desc())

@@ -5,7 +5,7 @@ EXPORTS_DIR = os.path.join(INSTANCE_DIR, "exports")
 
 class Config:
     # Flask sessions and application secret
-    SECRET_KEY = os.environ.get("SECRET_KEY", "tma-dev-secret-key")
+    SECRET_KEY = os.environ.get("SECRET_KEY", "tma-dev-secret-key-must-be-at-least-32-bytes-long")
 
     # Use SQLite database
     SQLALCHEMY_DATABASE_URI = os.environ.get(
@@ -14,7 +14,7 @@ class Config:
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
     # JWT Token Secrets
-    JWT_SECRET_KEY = os.environ.get("JWT_SECRET_KEY", "tma-dev-jwt-secret")
+    JWT_SECRET_KEY = os.environ.get("JWT_SECRET_KEY", "tma-dev-jwt-secret-key-must-be-at-least-32-bytes-long")
     JWT_ACCESS_TOKEN_EXPIRES = 60 * 60 * 8  # 8 hours
     JWT_TOKEN_LOCATION = ["headers"]
 
@@ -23,9 +23,9 @@ class Config:
     ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD", "Admin@12345")
     ADMIN_NAME = os.environ.get("ADMIN_NAME", "System Administrator")
 
-    # Redis is used for caching
+    # Redis/In-Memory Cache configuration
     REDIS_URL = os.environ.get("REDIS_URL", "redis://localhost:6379/0")
-    CACHE_TYPE = "RedisCache"
+    CACHE_TYPE = os.environ.get("CACHE_TYPE", "SimpleCache")
     CACHE_REDIS_URL = REDIS_URL
     CACHE_DEFAULT_TIMEOUT = 120  # seconds - cache expiry for trek listings
 

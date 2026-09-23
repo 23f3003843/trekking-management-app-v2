@@ -140,6 +140,8 @@ class Booking(database.Model):
         return {
             "id": self.id,
             "userId": self.userId,
+            "trekker_name": self.trekker.fullName if self.trekker else None,
+            "trekker_email": self.trekker.email if self.trekker else None,
             "trekId": self.trekId,
             "trek_name": self.trek.name if self.trek else None,
             "location": self.trek.location if self.trek else None,

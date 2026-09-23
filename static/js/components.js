@@ -477,10 +477,10 @@ const staffTrekDetails = {
         <div class="col-md-7">
           <h6>Registered Participants ({{ participants.length }})</h6>
           <table class="table table-sm table-striped bg-white">
-            <thead><tr><th>User</th><th>Status</th><th>Booked On</th></tr></thead>
+            <thead><tr><th>User</th><th>Email</th><th>Status</th><th>Booked On</th></tr></thead>
             <tbody>
               <tr v-for="p in participants" :key="p.id">
-                <td>#{{ p.user_id }}</td><td>{{ p.status }}</td><td>{{ new Date(p.bookingDate).toLocaleDateString() }}</td>
+                <td>{{ p.trekker_name || ('User #' + p.userId) }}</td><td>{{ p.trekker_email || '—' }}</td><td>{{ p.status }}</td><td>{{ new Date(p.bookingDate).toLocaleDateString() }}</td>
               </tr>
             </tbody>
           </table>

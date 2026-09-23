@@ -24,7 +24,7 @@ def dailyTrek_reminders(lookahead_days: int = 3):
                 {trek.location} starts on <strong>{trek.startDate}</strong>
                 ({trek.durationOfDays} day(s), difficulty: {trek.difficulty}).</p>
                 <p>Please arrive at the meeting point with appropriate gear and be on
-                time. Available slots remaining for this batch: {trek.available_slots}.</p>
+                time. Available slots remaining for this batch: {trek.slotsAvailable}.</p>
                 <p>Safe travels!<br/>Trek Manager</p>
             """
             sendEmail(f"Reminder: {trek.name} starts on {trek.startDate}", [user.email], html)
