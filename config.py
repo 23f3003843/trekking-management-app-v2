@@ -7,10 +7,12 @@ class Config:
     # Flask sessions and application secret
     SECRET_KEY = os.environ.get("SECRET_KEY", "tma-dev-secret-key-must-be-at-least-32-bytes-long")
 
-    # Use SQLite database
-    SQLALCHEMY_DATABASE_URI = os.environ.get(
+    _db_url = os.environ.get(
         "DATABASE_URL", "sqlite:///" + os.path.join(INSTANCE_DIR, "trekmanager.db")
     )
+    if _db_url and _db_url.startswith("postgres://"):
+        _db_url = _db_url.replace("postgres://", "postgresql://", 1)
+    SQLALCHEMY_DATABASE_URI = _db_url
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
     # JWT Token Secrets
